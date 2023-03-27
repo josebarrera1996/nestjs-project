@@ -1,6 +1,8 @@
-import { IUser } from "src/interfaces/user.interface";
-import { BaseEntity } from 'src/config/base.entity';
-import { Column, Entity } from 'typeorm';
+import { IUser } from '../../interfaces/user.interface';
+import { BaseEntity } from '../../config/base.entity';
+import { Column, Entity, OneToMany  } from 'typeorm';
+import { ROLES } from '../../constants/roles';
+import { UsersProjectsEntity } from "./usersProjects.entity";
 
 // Entidad 'users'
 @Entity({ name: 'users' })
@@ -15,15 +17,19 @@ export class UsersEntity extends BaseEntity implements IUser { // Extendiendo la
     @Column()
     age: number;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
-    @Column()
+    @Column({ unique: true })
     username: string;
 
     @Column()
     password: string;
 
-    @Column()
-    role: string;
+    @Column({ type: 'enum', enum: ROLES })
+    role: ROLES;
+
+    // Relación '1 a muchos' con 'UsersProjects'
+    @OneToMany(() => UsersProjectsEntity, (usersProjects) => usersProjects.user)
+    projectsIncludes: UsersProjectsEntity[];
 }
