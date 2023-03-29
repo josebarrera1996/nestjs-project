@@ -16,6 +16,6 @@ import { ProjectsModule } from './projects/projects.module';
     TypeOrmModule.forRoot({ ...DataSourceConfig }),
     UsersModule,
     ProjectsModule,
-  ],
+  ]
 })
 export class AppModule { }

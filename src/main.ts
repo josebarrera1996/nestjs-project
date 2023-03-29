@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as morgan from 'morgan';
 import { CORS } from './constants';
+import { ValidationPipe } from '@nestjs/common';
 
 // Método inicializador de la app
 async function bootstrap() {
@@ -10,6 +11,12 @@ async function bootstrap() {
 
   // Middlewares
   app.use(morgan('dev')); // morgan en modo 'development'
+  app.useGlobalPipes(new ValidationPipe({ // Habilitando el uso de Pipes a nivel global, para poder realizar validaciones 
+    // Propiedades
+    transformOptions: {
+      enableImplicitConversion: true
+    }
+  }))
 
   // Llamando al servicio del 'ConfigModule'
   const configService = app.get(ConfigService);
