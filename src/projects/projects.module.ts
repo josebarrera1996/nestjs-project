@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ProjectsService  } from './services/projects.service';
-import { ControllersController } from './controllers/controllers.controller';
+import { ProjectsController } from './controllers/projects.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProjectsEntity } from './entities/projects.entity';
 
@@ -10,6 +10,6 @@ import { ProjectsEntity } from './entities/projects.entity';
     TypeOrmModule.forFeature([ProjectsEntity]) // Habilitando el ORM para la entidad alojada
   ],
   providers: [ProjectsService ],
-  controllers: [ControllersController]
+  controllers: [ProjectsController]
 })
 export class ProjectsModule {}

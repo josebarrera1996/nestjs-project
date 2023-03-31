@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ProjectDTO, ProjectUpdateDTO } from '../dto/projects.dto';
 import { ProjectsEntity } from '../entities/projects.entity';
+import { ErrorManager } from 'src/utils/error.manager';
 
 @Injectable()
 export class ProjectsService {
@@ -23,21 +24,41 @@ export class ProjectsService {
     // Método para obtener todos los proyectos
     public async findProjects(): Promise<ProjectsEntity[]> {
         try {
-            return await this.projectRepository.find();
+            const projects: ProjectsEntity[] = await this.projectRepository.find();
+            // Si surge algún error...
+            if (projects.length === 0) {
+                // Arrojar el siguiente error personalizado
+                throw new ErrorManager({
+                    type: 'BAD_REQUEST',
+                    message: 'No se encontro resultado',
+                });
+            }
+            return projects;
         } catch (error) {
-            throw new Error(error);
+            // Arrojar error interno
+            throw ErrorManager.createSignatureError(error.message);
         }
     }
 
     // Método para traer a un proyecto en específico (gracias a su ID)
     public async findProjectById(id: string): Promise<ProjectsEntity> {
         try {
-            return await this.projectRepository
+            const project = await this.projectRepository
                 .createQueryBuilder('project')
                 .where({ id })
                 .getOne();
+            // Si surge algún error...
+            if (!project) {
+                // Arrojar el siguiente error personalizado
+                throw new ErrorManager({
+                    type: 'BAD_REQUEST',
+                    message: 'No existe proyecto con el id ' + id,
+                });
+            }
+            return project;
         } catch (error) {
-            throw new Error(error);
+            // Arrojar error interno
+            throw ErrorManager.createSignatureError(error.message);
         }
     }
 
@@ -48,12 +69,18 @@ export class ProjectsService {
                 id,
                 body,
             );
+            // Si surge algún error...
             if (project.affected === 0) {
-                return undefined;
+                // Arrojar el siguiente error personalizado
+                throw new ErrorManager({
+                    type: 'BAD_REQUEST',
+                    message: 'No se pudo actualizar proyecto',
+                });
             }
             return project;
         } catch (error) {
-            throw new Error(error);
+            // Arrojar error interno
+            throw ErrorManager.createSignatureError(error.message);
         }
     }
 
@@ -61,13 +88,18 @@ export class ProjectsService {
     public async deleteProject(id: string): Promise<DeleteResult | undefined> {
         try {
             const project: DeleteResult = await this.projectRepository.delete(id);
+            // Si surge algún error...
             if (project.affected === 0) {
-                return undefined;
+                // Arrojar el siguiente error personalizado
+                throw new ErrorManager({
+                    type: 'BAD_REQUEST',
+                    message: 'No se pudo borrar proyecto',
+                });
             }
             return project;
         } catch (error) {
-            throw new Error(error);
+            // Arrojar error interno
+            throw ErrorManager.createSignatureError(error.message);
         }
     }
-
 }
