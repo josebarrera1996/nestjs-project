@@ -41,11 +41,14 @@ export class ProjectsService {
     }
 
     // Método para traer a un proyecto en específico (gracias a su ID)
+    // También nos traerá a los usuarios que estén asignados a este proyecto
     public async findProjectById(id: string): Promise<ProjectsEntity> {
         try {
             const project = await this.projectRepository
                 .createQueryBuilder('project')
                 .where({ id })
+                .leftJoinAndSelect('project.usersIncludes', 'usersIncludes') // Campo de la entidad + Campo personalziado (Alias)
+                .leftJoinAndSelect('usersIncludes.user', 'user') // Campo de la entidad + Campo personalziado (Alias)
                 .getOne();
             // Si surge algún error...
             if (!project) {

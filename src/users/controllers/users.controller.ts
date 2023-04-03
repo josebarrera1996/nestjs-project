@@ -8,7 +8,7 @@ import {
     Post,
     Put,
 } from '@nestjs/common';
-import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
+import { UserDTO, UserUpdateDTO, UserToProjectDTO } from '../dto/user.dto';
 import { UsersService } from '../services/users.service';
 
 // Endpoint -> api/users
@@ -33,6 +33,12 @@ export class UsersController {
     // Se realizará un parseo del parámetro del 'id'
     public async findUserById(@Param('id', new ParseUUIDPipe()) id: string) {
         return await this.usersService.findUserById(id);
+    }
+
+    @Post('add-to-project')
+    // Utilizando el respectivo DTO para validar lo ingresado
+    public async addToProject(@Body() body: UserToProjectDTO) {
+      return await this.usersService.relationToProject(body);
     }
 
     @Put('edit/:id')

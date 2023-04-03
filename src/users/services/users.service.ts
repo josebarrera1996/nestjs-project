@@ -3,14 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UsersEntity } from '../entities/users.entity';
 import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
+import { UserToProjectDTO } from '../dto/user.dto';
 import { ErrorManager } from 'src/utils/error.manager';
+import { UsersProjectsEntity } from '../entities/usersProjects.entity';
 
 @Injectable()
 export class UsersService {
 
     // Inyección de dependencias
-    // Para poder utilizar el repositorio que nos ofrece TypeORM
-    constructor(@InjectRepository(UsersEntity) private readonly userRepository: Repository<UsersEntity>) {
+    // Para poder utilizar los repositorios que nos ofrece TypeORM
+    constructor(@InjectRepository(UsersEntity) private readonly userRepository: Repository<UsersEntity>,
+        @InjectRepository(UsersProjectsEntity) private readonly userProjectsRepository: Repository<UsersProjectsEntity>) {
     }
 
     // Método para crear un nuevo usuario
@@ -43,11 +46,14 @@ export class UsersService {
     }
 
     // Método para traer a un usuario en específico (gracias a su ID)
+    // Nos traerá los proyectos (con toda su información) que hayan sido asignados al mismo
     public async findUserById(id: string): Promise<UsersEntity> {
         try {
             const user: UsersEntity = await this.userRepository
                 .createQueryBuilder('user')
                 .where({ id })
+                .leftJoinAndSelect('user.projectsIncludes', 'projectsIncludes') // Campo de la entidad + Campo personalizado (Alias)
+                .leftJoinAndSelect('projectsIncludes.project', 'project') // Campo de la entidad + Campo personalizado (Alias)
                 .getOne();
             // Si no se encontró al usurio...
             if (!user) {
@@ -60,6 +66,15 @@ export class UsersService {
             return user;
         } catch (error) {
             // Manejando errores internos
+            throw ErrorManager.createSignatureError(error.message);
+        }
+    }
+
+    // Método para asignar proyecto/s a un usuario
+    public async relationToProject(body: UserToProjectDTO) {
+        try {
+            return await this.userProjectsRepository.save(body);
+        } catch (error) {
             throw ErrorManager.createSignatureError(error.message);
         }
     }
