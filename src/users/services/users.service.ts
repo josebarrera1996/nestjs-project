@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UsersEntity } from '../entities/users.entity';
 import { UserDTO, UserUpdateDTO } from '../dto/user.dto';
 import { UserToProjectDTO } from '../dto/user.dto';
@@ -16,9 +17,11 @@ export class UsersService {
         @InjectRepository(UsersProjectsEntity) private readonly userProjectsRepository: Repository<UsersProjectsEntity>) {
     }
 
-    // Método para crear un nuevo usuario
+    // Método para crear un nuevo usuario (registrarlo)
     public async createUser(body: UserDTO): Promise<UsersEntity> {
         try {
+            // Realizando el Hashing para lograr una correcta encriptación de la 'password'
+            body.password = await bcrypt.hash(body.password, +process.env.HASH_SALT); // Utilizando variables de entorno
             return await this.userRepository.save(body);
         } catch (error) {
             // Manejando errores internos
@@ -63,6 +66,22 @@ export class UsersService {
                     message: 'No se encontró resultado',
                 });
             }
+            return user;
+        } catch (error) {
+            // Manejando errores internos
+            throw ErrorManager.createSignatureError(error.message);
+        }
+    }
+
+    // Método para traer a un usuario en específico (según 'propiedad:valor')
+    // Este método nos traerá el campo 'password'
+    public async findBy({ key, value }: { key: keyof UserDTO; value: any }) {
+        try {
+            const user: UsersEntity = await this.userRepository
+                .createQueryBuilder('user')
+                .addSelect('user.password')
+                .where({ [key]: value })
+                .getOne();
             return user;
         } catch (error) {
             // Manejando errores internos

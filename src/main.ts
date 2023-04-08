@@ -1,9 +1,9 @@
 import { ConfigService } from '@nestjs/config/dist';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as morgan from 'morgan';
 import { CORS } from './constants';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 
 // Método inicializador de la app
 async function bootstrap() {
@@ -16,7 +16,9 @@ async function bootstrap() {
     transformOptions: {
       enableImplicitConversion: true
     }
-  }))
+  }));
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector)); // Para poder utilizar 'class-transformer' (poder utilizar 'Exclude')
 
   // Llamando al servicio del 'ConfigModule'
   const configService = app.get(ConfigService);

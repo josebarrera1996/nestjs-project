@@ -11,6 +11,7 @@ import { UsersProjectsEntity } from './entities/usersProjects.entity';
     TypeOrmModule.forFeature([UsersEntity, UsersProjectsEntity]) // Habilitando el ORM para las entidades alojadas
   ],
   providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
+  exports: [UsersService, TypeOrmModule]
 })
-export class UsersModule {}
+export class UsersModule { }
