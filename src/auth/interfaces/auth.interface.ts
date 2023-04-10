@@ -18,3 +18,18 @@ export interface AuthResponse {
     accessToken: string;
     user: UsersEntity;
 }
+
+// Interfaz para trabajar con el resultado obtenido del Token
+export interface AuthTokenResult {
+    role: string;
+    sub: string;
+    lat: number;
+    exp: number;
+}
+
+// Interfaz para trabajar cuando el token haya expirado o no
+export interface IUseToken {
+    role: string;
+    sub: string;
+    isExpired: boolean;
+}

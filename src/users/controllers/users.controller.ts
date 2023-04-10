@@ -7,12 +7,16 @@ import {
     ParseUUIDPipe,
     Post,
     Put,
+    UseGuards
 } from '@nestjs/common';
 import { UserDTO, UserUpdateDTO, UserToProjectDTO } from '../dto/user.dto';
 import { UsersService } from '../services/users.service';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { PublicAccess } from 'src/auth/decorators/public.decorator';
 
 // Endpoint -> api/users
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UsersController {
 
     // Inyección de dependencias
@@ -29,6 +33,7 @@ export class UsersController {
         return await this.usersService.findUsers();
     }
 
+    @PublicAccess()
     @Get(':id')
     // Se realizará un parseo del parámetro del 'id'
     public async findUserById(@Param('id', new ParseUUIDPipe()) id: string) {
