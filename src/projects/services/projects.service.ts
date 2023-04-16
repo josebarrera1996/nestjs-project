@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { ACCESS_LEVEL } from 'src/constants/roles';
 import { ProjectDTO, ProjectUpdateDTO } from '../dto/projects.dto';
 import { ProjectsEntity } from '../entities/projects.entity';
+import { UsersProjectsEntity } from 'src/users/entities/usersProjects.entity';
+import { UsersService } from 'src/users/services/users.service';
 import { ErrorManager } from 'src/utils/error.manager';
 
 @Injectable()
@@ -10,14 +13,27 @@ export class ProjectsService {
 
     // Inyección de dependencias
     // Para poder utilizar el repositorio que nos ofrece TypeORM
-    constructor(@InjectRepository(ProjectsEntity) private readonly projectRepository: Repository<ProjectsEntity>) { }
+    constructor(@InjectRepository(ProjectsEntity) private readonly projectRepository: Repository<ProjectsEntity>,
+        @InjectRepository(UsersProjectsEntity) private readonly userProjectRepository: Repository<UsersProjectsEntity>,
+        private readonly usersService: UsersService
+    ) { }
 
-    // Método para crear un nuevo proyecto
-    public async createProject(body: ProjectDTO): Promise<ProjectsEntity> {
+    // Método para crear un nuevo proyecto y un nuevo registro en la entidad customizada (User - Project)
+    public async createProject(body: ProjectDTO, userId: string): Promise<any> {
         try {
-            return await this.projectRepository.save(body);
+            // Traer a el usuario gracias a su ID
+            const user = await this.usersService.findUserById(userId);
+            // Creando el proyecto
+            const project = await this.projectRepository.save(body);
+            // Alojando los siguientes datos en la entidad customizada (User - Project)
+            return await this.userProjectRepository.save({
+                accessLevel: ACCESS_LEVEL.OWNER, // Especificando el nivel de acceso
+                user: user, // Especificando el usuario creador del proyecto
+                project // Especificando el proyecto
+            })
         } catch (error) {
-            throw new Error(error);
+            // Arrojar error interno
+            throw ErrorManager.createSignatureError(error.message);
         }
     }
 

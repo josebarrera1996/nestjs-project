@@ -74,8 +74,8 @@ export class AccessLevelGuard implements CanActivate {
       }
     }
 
-    // Si el usuario tiene el rol de 'admin' dentro de sus roles...
-    if (roleUser === ROLES.ADMIN) {
+    // Si el usuario tiene el rol de 'admin' o 'creator' dentro de sus roles...
+    if (roleUser === ROLES.ADMIN || roleUser === ROLES.CREATOR) {
       return true;
     }
 
@@ -90,8 +90,11 @@ export class AccessLevelGuard implements CanActivate {
       throw new UnauthorizedException('No formas parte del proyecto');
     }
 
-    // Si no cumple con el nivel de acceso determinado...
-    if (ACCESS_LEVEL[accessLevel] !== userExistInProject.accessLevel) {
+
+    // Si el nivel de acceso (que se pido por decorador) es mayor al nivel de acceso dentro del proyecto entrar en el error...
+    // Y si es menor, tiene que dejar pasar al usuario y que se pueda realizar el request
+    // 30 > 40
+    if (ACCESS_LEVEL[accessLevel] > userExistInProject.accessLevel) {
       throw new UnauthorizedException('No tienes el nivel de acceso necesario');
     }
 

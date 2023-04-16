@@ -16,6 +16,7 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
 import { AdminAccess } from 'src/auth/decorators/admin.decorator';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorator';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 // Endpoint -> api/projects
 @Controller('projects')
@@ -25,11 +26,11 @@ export class ProjectsController {
     // Inyección de dependencias
     constructor(private readonly projectService: ProjectsService) { }
 
-    @AdminAccess()
-    @Post('create')
+    @Roles('CREATOR')
+    @Post('create/userOwner/:userId')
     // Utilización del respectivo DTO para la validación de datos
-    public async createProject(@Body() body: ProjectDTO) {
-        return await this.projectService.createProject(body);
+    public async createProject(@Body() body: ProjectDTO, @Param('userId') userId: string) {
+        return await this.projectService.createProject(body, userId);
     }
 
     @Get('all')
