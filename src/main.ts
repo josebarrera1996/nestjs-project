@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config/dist';
 import { NestFactory, Reflector } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as morgan from 'morgan';
 import { CORS } from './constants';
@@ -29,6 +30,16 @@ async function bootstrap() {
 
   // Implementando el prefijo global 'api' para toda la app
   app.setGlobalPrefix('api');
+
+  // Implementando OpenAPI (Swagger)
+  const config = new DocumentBuilder()
+    .setTitle('Taskrr API')
+    .setDescription('Aplicación de gestión de tareas')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document); // Endpoint
 
   // Levantando el servidor
   await app.listen(configService.get('PORT')); // Accediendo a la variable de entorno
