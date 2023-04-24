@@ -80,4 +80,11 @@ export class ProjectsController {
     public async deleteProject(@Param('projectId', new ParseUUIDPipe()) id: string) {
         return await this.projectService.deleteProject(id);
     }
+
+    // Implementando método de prueba para trabajar un provider de HttpModule
+    @PublicAccess()
+    @Get('list/api')
+    public async listApi() {
+        return this.projectService.listApi();
+    }
 }

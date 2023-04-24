@@ -7,6 +7,7 @@ import { ProjectsEntity } from '../entities/projects.entity';
 import { UsersProjectsEntity } from 'src/users/entities/usersProjects.entity';
 import { UsersService } from 'src/users/services/users.service';
 import { ErrorManager } from 'src/utils/error.manager';
+import { HttpCustomService } from 'src/providers/http/http.service';
 
 @Injectable()
 export class ProjectsService {
@@ -15,7 +16,7 @@ export class ProjectsService {
     // Para poder utilizar el repositorio que nos ofrece TypeORM
     constructor(@InjectRepository(ProjectsEntity) private readonly projectRepository: Repository<ProjectsEntity>,
         @InjectRepository(UsersProjectsEntity) private readonly userProjectRepository: Repository<UsersProjectsEntity>,
-        private readonly usersService: UsersService
+        private readonly usersService: UsersService, private readonly httpService: HttpCustomService
     ) { }
 
     // Método para crear un nuevo proyecto y un nuevo registro en la entidad customizada (User - Project)
@@ -120,5 +121,10 @@ export class ProjectsService {
             // Arrojar error interno
             throw ErrorManager.createSignatureError(error.message);
         }
+    }
+
+    // Método para traer los personajes de la Api de Rick and Morty
+    public async listApi() {
+        return this.httpService.apiFindAll()
     }
 }
