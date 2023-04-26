@@ -63,7 +63,7 @@ $ npm install
 **.develop.env** (Desarrollo)
 
 - DB_HOST=localhost
-- DB_PORT=3306 (ejemplo)
+- DB_PORT=5432 (ejemplo)
 - DB_DATABASE=codrr_db (ejemplo)
 - DB_USER=root (ejemplo)
 - DB_PASSWORD=password (ejemplo)
