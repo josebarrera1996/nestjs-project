@@ -22,51 +22,69 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## Curso realizado de YouTube
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Es importante destacar que este proyecto es el resultado de seguir una [lista](https://www.youtube.com/playlist?list=PLergODdA95kfcSoXqZZ-IDImO6YaQLYlG) de videos, cuyo autor es **codrr**
 
-## Installation
+En este curso aprenderas como generar una API REST compleja con **NestJS** utilizando como lenguage core `TypeScript` y `TypeORM` como ORM SQL.
+
+## Tecnologias a aplicar:
+
+- POO.
+- MySQL como base de datos.
+- Utilización de Docker Compose.
+- Configuracion de TypeScript.
+- Configuracion de rutas, controladores, servicios y entidades.
+
+## Descripción de la App
+
+<p align="center">
+<img src="proyecto.png" width="400" alt="Nest Logo" />
+</p>
+
+Características de la misma:
+
+- Sistema de autenticación de usuario (con JWT) que permitirá la posibilidad de trabajar con sus respectivos roles (gracias a la implementación de los Guards)
+- 3 entidades fuertes: Users, Projects & Tasks
+  - De las primeras 2 surgirá una entidad customizada: Users_Projects
+- La capacidad de los roles es la siguiente:
+  - Admin (podrá crear, editar, y borrar proyectos. Así como poder sobre los usuarios normales)
+  - Owner (podrá crear, editar y borrar los proyectos que él tenga acceso)
+  - Developer (podrá crear, editar y borrar 'tareas')
+
+## Instalación
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+## Configurar las variables de entorno
+
+**.develop.env** (Desarrollo)
+
+- DB_HOST=localhost
+- DB_PORT=3306 (ejemplo)
+- DB_DATABASE=codrr_db (ejemplo)
+- DB_USER=root (ejemplo)
+- DB_PASSWORD=password (ejemplo)
+- HASH_SALT=10
+- JWT_SECRET=codrr@2023 (ejemplo)
+
+## Corriendo la App
 
 ```bash
-# development
-$ npm run start
+# docker compose
+$ docker-compose up -d
 
 # watch mode
 $ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
 
-## Test
+## Swagger
 
-```bash
-# unit tests
-$ npm run test
+Para ver aún más en detalle el funcionamiento de la api, tenemos el siguiente endpoint que nos permitirá apreciar, mediante Swagger, la documentación y así poder probarla:
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- http://localhost:8000/docs
 
 ## License
 
